@@ -1,0 +1,33 @@
+{
+  "dataset": "synthetic",
+  "seed": 271828,
+  "date_start": "2024-12-04",
+  "date_end": "2026-11-05",
+  "rows": 2808,
+  "sku_count": 4,
+  "train_rows": 2688,
+  "test_rows": 120,
+  "split": "chronological: final 30 days held out",
+  "target": "daily units sold",
+  "features": [
+    "sku",
+    "unit_price",
+    "promo",
+    "holiday_flag",
+    "weekday",
+    "month",
+    "lag_1",
+    "lag_7",
+    "lag_28",
+    "rolling_7"
+  ],
+  "baseline_lag_7": {
+    "mae": 2.225,
+    "wape_pct": 18.99
+  },
+  "random_forest": {
+    "mae": 1.543,
+    "wape_pct": 13.17
+  },
+  "limitations": "Entire dataset is deterministic synthetic data; these scores do not represent retail performance."
+}

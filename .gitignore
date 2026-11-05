@@ -1,0 +1,12 @@
+# Dependencies & System files
+.vscode/
+Thumbs.db
+.DS_Store
+database/*.sqlite3
+__pycache__/
+*.py[cod]
+.env
+.venv/
+
+*.log
+*.sqlite3

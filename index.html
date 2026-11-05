@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AnnSetu — Smart Inventory Expiry Tracker &amp; Food Distribution System</title>
+<link rel="preconnect" href="https://api.fontshare.com" />
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-name">AnnSetu</div>
+      <div class="brand-sub">Expiry Tracker &amp; Food Distribution</div>
+    </div>
+    <nav class="nav" id="nav">
+      <div class="nav-label">Operations</div>
+      <a href="#dashboard" data-route="dashboard"><i data-lucide="layout-dashboard"></i>Dashboard</a>
+      <a href="#inventory" data-route="inventory"><i data-lucide="package"></i>Inventory &amp; Expiry</a>
+      <a href="#distribution" data-route="distribution"><i data-lucide="hand-heart"></i>Food Distribution</a>
+      <a href="#ngos" data-route="ngos"><i data-lucide="users"></i>NGOs</a>
+      <div class="nav-label">Database</div>
+      <a href="#reports" data-route="reports"><i data-lucide="file-bar-chart"></i>SQL Reports</a>
+      <a href="#console" data-route="console"><i data-lucide="terminal-square"></i>SQL Console</a>
+      <a href="#schema" data-route="schema"><i data-lucide="database"></i>Schema &amp; ER Diagram</a>
+      <a href="#audit" data-route="audit"><i data-lucide="scroll-text"></i>Audit Log</a>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="engine"><span class="dot"></span><span id="engineInfo">Loading SQLite…</span></div>
+      <button class="btn btn-ghost btn-sm w-full" id="resetDb"><i data-lucide="rotate-ccw"></i>Reset database</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn menu-btn" id="menuBtn" aria-label="Open menu"><i data-lucide="menu"></i></button>
+      <div>
+        <h1 id="pageTitle">Dashboard</h1>
+        <p class="page-sub" id="pageSub"></p>
+      </div>
+      <div class="top-actions">
+        <span class="today" id="today"></span>
+        <button class="btn btn-outline btn-sm" id="logBtn"><i data-lucide="code-2"></i>SQL Log <span class="count" id="logCount">0</span></button>
+      </div>
+    </header>
+    <main id="view" class="view">
+      <div class="loading"><div class="spinner"></div>Booting the database engine…</div>
+    </main>
+  </div>
+</div>
+
+<!-- SQL log drawer -->
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-head">
+    <div>
+      <h3>SQL Query Log</h3>
+      <p class="muted small">Every statement the interface sends to the database.</p>
+    </div>
+    <button class="icon-btn" id="closeDrawer" aria-label="Close"><i data-lucide="x"></i></button>
+  </div>
+  <div class="drawer-body" id="logList"></div>
+</aside>
+<div class="scrim" id="scrim"></div>
+
+<!-- Modal -->
+<div class="modal-wrap" id="modalWrap">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head"><h3 id="modalTitle"></h3><button class="icon-btn" data-close aria-label="Close"><i data-lucide="x"></i></button></div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script src="./app.js"></script>
+</body>
+</html>
