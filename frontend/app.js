@@ -26,80 +26,47 @@ const viewMeta = {
   matching: ["Match desk", "Recommendations"],
   logistics: ["Fulfilment", "Deliveries"],
   map: ["Network map", "Live locations"],
-  simulation: ["Live simulation", "Concurrency & scheduling"],
   analytics: ["Analytics", "Impact"],
   activity: ["Activity", "Recent changes"],
   model: ["Data model", "ER schema"],
 };
 
-// Read-only schema reference from database/migrations/001_initial_postgresql.sql.
-// Keep this snapshot aligned with that migration; the current API does not expose schema introspection.
+// Read-only schema reference for sql/annsetu_python_mysql.sql.
 const schemaTables = [
-  { name: "organization", domain: "Identity & access", columns: [["id", "bigint", "PK"], ["name", "text"], ["kind", "text"], ["synthetic", "boolean"], ["created_at", "timestamptz"]], constraints: ["kind ∈ retailer, recipient, logistics, admin", "synthetic defaults false"] },
-  { name: "app_user", domain: "Identity & access", columns: [["id", "bigint", "PK"], ["organization_id", "bigint", "FK"], ["email", "text", "UQ"], ["password_hash", "text"], ["active", "boolean"], ["created_at", "timestamptz"]], constraints: ["email is unique", "organization_id is optional"] },
-  { name: "app_role", domain: "Identity & access", columns: [["id", "smallint", "PK"], ["name", "text", "UQ"], ["created_at", "timestamptz"]], constraints: ["name is unique", "name ∈ administrator, retailer, recipient, logistics"] },
-  { name: "user_role", domain: "Identity & access", columns: [["user_id", "bigint", "PK · FK"], ["role_id", "smallint", "PK · FK"]], constraints: ["composite primary key (user_id, role_id)", "user_id cascades on user deletion"] },
-  { name: "audit_log", domain: "Identity & access", columns: [["id", "bigint", "PK"], ["occurred_at", "timestamptz"], ["actor_user_id", "bigint", "FK"], ["action", "text"], ["entity", "text"], ["entity_id", "bigint"], ["details", "jsonb"]], constraints: ["actor_user_id is optional", "details defaults to an empty JSON object", "entity_id is polymorphic and has no FK"] },
-  { name: "store", domain: "Retail & inventory", columns: [["id", "bigint", "PK"], ["organization_id", "bigint", "FK"], ["name", "text"], ["city", "text"], ["latitude", "numeric(9,6)"], ["longitude", "numeric(9,6)"]], constraints: ["coordinates are checked within latitude/longitude ranges"] },
-  { name: "category", domain: "Retail & inventory", columns: [["id", "bigint", "PK"], ["name", "text", "UQ"], ["storage", "text"]], constraints: ["name is unique", "storage ∈ ambient, chilled, frozen"] },
-  { name: "product", domain: "Retail & inventory", columns: [["id", "bigint", "PK"], ["store_id", "bigint", "FK"], ["sku", "text"], ["name", "text"], ["category_id", "bigint", "FK"], ["unit", "text"], ["unit_mass_kg", "numeric(12,6)"], ["unit_price", "numeric(12,2)"], ["safety_stock", "numeric(12,3)"]], constraints: ["unique (store_id, sku)", "unit_price and safety_stock are nonnegative", "unit_mass_kg is optional; when set it must be positive"] },
-  { name: "data_import", domain: "Retail & inventory", columns: [["id", "bigint", "PK"], ["organization_id", "bigint", "FK"], ["data_type", "text"], ["source_name", "text"], ["file_sha256", "char(64)"], ["imported_at", "timestamptz"], ["rows_seen", "integer"], ["rows_imported", "integer"], ["status", "text"]], constraints: ["unique (organization_id, data_type, file_sha256)", "row counts are nonnegative", "status ∈ validated, completed, failed"] },
-  { name: "batch", domain: "Retail & inventory", columns: [["id", "bigint", "PK"], ["product_id", "bigint", "FK"], ["lot_code", "text"], ["received_on", "date"], ["manufacturing_date", "date"], ["expiry_date", "date"], ["quantity", "numeric(12,3)"], ["reserved", "numeric(12,3)"], ["source", "text"]], constraints: ["unique (product_id, lot_code)", "quantity > 0 and 0 ≤ reserved ≤ quantity", "manufacturing date, when set, precedes expiry", "source ∈ synthetic, imported, manual"] },
-  { name: "sales_observation", domain: "Retail & inventory", columns: [["id", "bigint", "PK"], ["product_id", "bigint", "FK"], ["sold_on", "date"], ["quantity", "numeric(12,3)"], ["net_amount", "numeric(12,2)"], ["source", "text"], ["source_row_key", "text", "UQ"], ["import_id", "bigint", "FK"]], constraints: ["quantity is nonnegative", "source ∈ synthetic, imported, manual", "source_row_key is unique and optional"] },
-  { name: "inventory_snapshot", domain: "Retail & inventory", columns: [["id", "bigint", "PK"], ["store_id", "bigint", "FK"], ["product_id", "bigint", "FK"], ["observed_at", "timestamptz"], ["quantity", "numeric(12,3)"], ["source", "text"], ["import_id", "bigint", "FK"]], constraints: ["quantity is nonnegative", "unique (store_id, product_id, observed_at)"] },
-  { name: "recipient_site", domain: "Recipient network", columns: [["id", "bigint", "PK"], ["organization_id", "bigint", "FK"], ["name", "text"], ["city", "text"], ["latitude", "numeric(9,6)"], ["longitude", "numeric(9,6)"], ["capacity_kg", "numeric(12,3)"], ["cold_storage", "boolean"], ["verified_at", "timestamptz"], ["receiving_start", "time"], ["receiving_end", "time"]], constraints: ["capacity_kg > 0", "coordinates are checked within latitude/longitude ranges"] },
-  { name: "recipient_constraint", domain: "Recipient network", columns: [["id", "bigint", "PK"], ["recipient_id", "bigint", "FK"], ["category_id", "bigint", "FK"], ["max_quantity", "numeric(12,3)"], ["storage", "text"], ["dietary_note", "text"]], constraints: ["unique (recipient_id, category_id, storage)", "max_quantity is optional; when set it must be positive", "storage ∈ ambient, chilled, frozen"] },
-  { name: "demand", domain: "Recipient network", columns: [["id", "bigint", "PK"], ["recipient_id", "bigint", "FK"], ["category_id", "bigint", "FK"], ["quantity", "numeric(12,3)"], ["unit", "text"], ["needed_from", "timestamptz"], ["needed_until", "timestamptz"], ["status", "text"], ["declared", "boolean"], ["created_at", "timestamptz"]], constraints: ["quantity > 0", "needed_until ≥ needed_from", "status ∈ open, partially_fulfilled, fulfilled, cancelled"] },
-  { name: "vehicle", domain: "Forecast & fulfilment", columns: [["id", "bigint", "PK"], ["organization_id", "bigint", "FK"], ["name", "text"], ["capacity_kg", "numeric(12,3)"], ["available", "boolean"], ["cold_storage", "boolean"], ["cost_per_km", "numeric(12,2)"]], constraints: ["capacity_kg > 0", "cost_per_km ≥ 0"] },
-  { name: "forecast_run", domain: "Forecast & fulfilment", columns: [["id", "bigint", "PK"], ["model_name", "text"], ["model_version", "text"], ["data_cutoff_at", "timestamptz"], ["generated_at", "timestamptz"], ["horizon_days", "integer"], ["dataset_kind", "text"], ["evaluation", "jsonb"]], constraints: ["horizon_days ∈ 1, 3, 7", "dataset_kind ∈ synthetic, real, mixed", "evaluation defaults to an empty JSON object"] },
-  { name: "forecast_value", domain: "Forecast & fulfilment", columns: [["id", "bigint", "PK"], ["run_id", "bigint", "FK"], ["store_id", "bigint", "FK"], ["recipient_id", "bigint", "FK"], ["product_id", "bigint", "FK"], ["category_id", "bigint", "FK"], ["target_date", "date"], ["predicted_quantity", "numeric(12,3)"], ["lower_bound", "numeric(12,3)"], ["upper_bound", "numeric(12,3)"]], constraints: ["scope foreign keys are optional", "product_id or category_id must be set", "predicted_quantity ≥ 0"] },
-  { name: "allocation", domain: "Forecast & fulfilment", columns: [["id", "bigint", "PK"], ["demand_id", "bigint", "FK"], ["status", "text"], ["created_at", "timestamptz"], ["approved_by", "bigint", "FK"], ["objective_value", "numeric(12,2)"], ["estimated_km", "numeric(10,2)"], ["transport_cost", "numeric(12,2)"], ["handling_cost", "numeric(12,2)"]], constraints: ["status ∈ proposed, approved, delivered, cancelled", "approved_by is optional", "distance and cost amounts default to zero"] },
-  { name: "allocation_line", domain: "Forecast & fulfilment", columns: [["id", "bigint", "PK"], ["allocation_id", "bigint", "FK"], ["batch_id", "bigint", "FK"], ["quantity", "numeric(12,3)"]], constraints: ["unique (allocation_id, batch_id)", "quantity > 0", "joins allocations to one or more batches"] },
-  { name: "route", domain: "Forecast & fulfilment", columns: [["id", "bigint", "PK"], ["vehicle_id", "bigint", "FK"], ["status", "text"], ["planned_at", "timestamptz"], ["total_km", "numeric(10,2)"], ["estimated_cost", "numeric(12,2)"]], constraints: ["vehicle_id is optional", "status ∈ planned, active, completed, cancelled"] },
-  { name: "delivery", domain: "Forecast & fulfilment", columns: [["id", "bigint", "PK"], ["allocation_id", "bigint", "FK · UQ"], ["route_id", "bigint", "FK"], ["status", "text"], ["pickup_at", "timestamptz"], ["delivered_at", "timestamptz"], ["confirmation_at", "timestamptz"]], constraints: ["one delivery record per allocation", "route_id is optional", "status ∈ pending, picked_up, delivered, failed"] },
-  { name: "economic_record", domain: "Forecast & fulfilment", columns: [["id", "bigint", "PK"], ["delivery_id", "bigint", "FK · UQ"], ["procurement_savings", "numeric(12,2)"], ["avoided_disposal_cost", "numeric(12,2)"], ["transport_cost", "numeric(12,2)"], ["handling_storage_cost", "numeric(12,2)"], ["platform_cost", "numeric(12,2)"], ["retailer_recovery_revenue", "numeric(12,2)"], ["assumptions_version", "text"]], constraints: ["one economic record per delivery", "all cost and savings values are nonnegative"] },
-  { name: "simulation_run", domain: "Simulation & scheduling", columns: [["id", "bigint", "PK"], ["scenario", "text"], ["status", "text"], ["config", "jsonb"], ["summary", "jsonb"], ["created_at", "timestamptz"], ["started_at", "timestamptz"], ["completed_at", "timestamptz"]], constraints: ["status ∈ queued, running, completed, cancelled, failed", "stores simulation configuration and run summary"] },
-  { name: "simulation_event", domain: "Simulation & scheduling", columns: [["id", "bigint", "PK"], ["run_id", "bigint", "FK"], ["sequence_no", "integer"], ["event_type", "text"], ["scheduled_at", "timestamptz"], ["status", "text"], ["payload", "jsonb"], ["result", "jsonb"], ["error", "text"], ["created_at", "timestamptz"], ["started_at", "timestamptz"], ["completed_at", "timestamptz"]], constraints: ["unique (run_id, sequence_no)", "due events are claimed with FOR UPDATE SKIP LOCKED"] },
+  {name:'organization',domain:'Organizations',columns:[['id','bigint','PK'],['name','varchar(150)'],['kind','varchar(20)'],['synthetic','boolean'],['created_at','datetime']],constraints:['organization kind identifies retailer, recipient, logistics, or admin']},
+  {name:'store',domain:'Retail & inventory',columns:[['id','bigint','PK'],['organization_id','bigint','FK'],['name','varchar(150)'],['city','varchar(100)'],['lat','decimal(9,6)'],['lon','decimal(9,6)']],constraints:['belongs to an organization']},
+  {name:'category',domain:'Retail & inventory',columns:[['id','bigint','PK'],['name','varchar(100)','UQ'],['storage','varchar(20)']],constraints:['storage is ambient, chilled, or frozen']},
+  {name:'product',domain:'Retail & inventory',columns:[['id','bigint','PK'],['store_id','bigint','FK'],['sku','varchar(40)'],['name','varchar(150)'],['category_id','bigint','FK'],['unit','varchar(20)'],['unit_price','decimal(12,2)'],['safety_stock','decimal(12,3)']],constraints:['SKU is unique per store']},
+  {name:'batch',domain:'Retail & inventory',columns:[['id','bigint','PK'],['product_id','bigint','FK'],['lot_code','varchar(60)'],['received_on','date'],['expiry_date','date'],['quantity','decimal(12,3)'],['reserved','decimal(12,3)'],['source','varchar(20)']],constraints:['lot code is unique per product','reserved quantity cannot exceed on-hand quantity']},
+  {name:'sale',domain:'Retail & inventory',columns:[['id','bigint','PK'],['product_id','bigint','FK'],['sold_on','date'],['quantity','decimal(12,3)'],['source','varchar(20)'],['source_row_key','char(64)','UQ']],constraints:['source row key prevents duplicate imports']},
+  {name:'recipient',domain:'Recipient network',columns:[['id','bigint','PK'],['organization_id','bigint','FK'],['name','varchar(150)'],['city','varchar(100)'],['lat','decimal(9,6)'],['lon','decimal(9,6)'],['capacity_kg','decimal(12,3)'],['cold_storage','boolean']],constraints:['recipient capacity must be positive']},
+  {name:'demand',domain:'Recipient network',columns:[['id','bigint','PK'],['recipient_id','bigint','FK'],['category_id','bigint','FK'],['quantity','decimal(12,3)'],['needed_by','date'],['status','varchar(30)'],['declared','boolean']],constraints:['status tracks open, partially fulfilled, fulfilled, or cancelled demand']},
+  {name:'forecast',domain:'Forecast & fulfilment',columns:[['id','bigint','PK'],['product_id','bigint','FK'],['generated_at','datetime'],['horizon_days','int'],['predicted_daily','decimal(12,4)'],['forecast_method','varchar(100)'],['data_cutoff','date']],constraints:['stores the recent-sales demand baseline']},
+  {name:'allocation',domain:'Forecast & fulfilment',columns:[['id','bigint','PK'],['demand_id','bigint','FK'],['status','varchar(20)'],['created_at','datetime'],['estimated_km','decimal(12,3)'],['transport_cost','decimal(12,2)'],['handling_cost','decimal(12,2)']],constraints:['status tracks proposed, approved, delivered, or cancelled']},
+  {name:'allocation_line',domain:'Forecast & fulfilment',columns:[['id','bigint','PK'],['allocation_id','bigint','FK'],['batch_id','bigint','FK'],['quantity','decimal(12,3)']],constraints:['one line per batch in an allocation']},
+  {name:'delivery',domain:'Forecast & fulfilment',columns:[['id','bigint','PK'],['allocation_id','bigint','FK/UQ'],['status','varchar(20)'],['completed_at','datetime']],constraints:['one delivery record per allocation']},
+  {name:'audit',domain:'Operations history',columns:[['id','bigint','PK'],['occurred_at','datetime'],['actor','varchar(100)'],['action','varchar(80)'],['entity','varchar(80)'],['entity_id','bigint'],['details','text']],constraints:['records operational changes']},
 ];
-for (const name of ["batch","sales_observation","inventory_snapshot","demand","vehicle","forecast_run","allocation","route","delivery","economic_record"]) {
-  schemaTables.find(table=>table.name===name)?.columns.push(["simulation_run_id","bigint","FK"]);
-}
-
 const schemaDomains = [
-  { name: "Identity & access", tables: ["organization", "app_user", "app_role", "user_role", "audit_log"] },
-  { name: "Retail & inventory", tables: ["store", "category", "product", "data_import", "batch", "sales_observation", "inventory_snapshot"] },
-  { name: "Recipient network", tables: ["recipient_site", "recipient_constraint", "demand"] },
-  { name: "Forecast & fulfilment", tables: ["vehicle", "forecast_run", "forecast_value", "allocation", "allocation_line", "route", "delivery", "economic_record"] },
-  { name: "Simulation & scheduling", tables: ["simulation_run", "simulation_event"] },
+  {name:'Organizations',tables:['organization']},
+  {name:'Retail & inventory',tables:['store','category','product','batch','sale']},
+  {name:'Recipient network',tables:['recipient','demand']},
+  {name:'Forecast & fulfilment',tables:['forecast','allocation','allocation_line','delivery']},
+  {name:'Operations history',tables:['audit']},
 ];
-
 const schemaRelations = [
-  ["organization", "id", "app_user", "organization_id"], ["organization", "id", "store", "organization_id"],
-  ["organization", "id", "recipient_site", "organization_id"], ["organization", "id", "data_import", "organization_id"],
-  ["organization", "id", "vehicle", "organization_id"], ["app_user", "id", "user_role", "user_id"],
-  ["app_role", "id", "user_role", "role_id"], ["app_user", "id", "allocation", "approved_by", true],
-  ["app_user", "id", "audit_log", "actor_user_id", true], ["store", "id", "product", "store_id"],
-  ["store", "id", "inventory_snapshot", "store_id"], ["store", "id", "forecast_value", "store_id", true],
-  ["category", "id", "product", "category_id"], ["category", "id", "recipient_constraint", "category_id"],
-  ["category", "id", "demand", "category_id"], ["category", "id", "forecast_value", "category_id", true],
-  ["product", "id", "batch", "product_id"], ["product", "id", "sales_observation", "product_id"],
-  ["product", "id", "inventory_snapshot", "product_id"], ["product", "id", "forecast_value", "product_id", true],
-  ["data_import", "id", "sales_observation", "import_id", true], ["data_import", "id", "inventory_snapshot", "import_id", true],
-  ["recipient_site", "id", "recipient_constraint", "recipient_id"], ["recipient_site", "id", "demand", "recipient_id"],
-  ["recipient_site", "id", "forecast_value", "recipient_id", true], ["forecast_run", "id", "forecast_value", "run_id"],
-  ["demand", "id", "allocation", "demand_id"], ["allocation", "id", "allocation_line", "allocation_id"],
-  ["batch", "id", "allocation_line", "batch_id"], ["allocation", "id", "delivery", "allocation_id"],
-  ["vehicle", "id", "route", "vehicle_id", true], ["route", "id", "delivery", "route_id", true],
-  ["delivery", "id", "economic_record", "delivery_id"],
-].map(([from, fromColumn, to, toColumn, optional = false]) => ({ from, fromColumn, to, toColumn, optional }));
-schemaRelations.push({from:"simulation_run",fromColumn:"id",to:"simulation_event",toColumn:"run_id",optional:false},...["batch","sales_observation","inventory_snapshot","demand","vehicle","forecast_run","allocation","route","delivery","economic_record"].map(name=>({from:"simulation_run",fromColumn:"id",to:name,toColumn:"simulation_run_id",optional:true})));
-
+  ['organization','id','store','organization_id'],['organization','id','recipient','organization_id'],
+  ['store','id','product','store_id'],['category','id','product','category_id'],
+  ['product','id','batch','product_id'],['product','id','sale','product_id'],['product','id','forecast','product_id'],
+  ['recipient','id','demand','recipient_id'],['category','id','demand','category_id'],
+  ['demand','id','allocation','demand_id'],['allocation','id','allocation_line','allocation_id'],
+  ['batch','id','allocation_line','batch_id'],['allocation','id','delivery','allocation_id'],
+].map(([from,fromColumn,to,toColumn])=>({from,fromColumn,to,toColumn,optional:false}));
 const schemaView = {
-  name: "v_batch_available",
-  columns: [["batch_id", "bigint"], ["product_id", "bigint"], ["lot_code", "text"], ["expiry_date", "date"], ["quantity", "numeric(12,3)"], ["reserved", "numeric(12,3)"], ["available", "derived numeric"], ["store_id", "bigint"], ["category_id", "bigint"], ["product", "text"], ["unit", "text"], ["safety_stock", "numeric(12,3)"], ["category", "text"], ["storage", "text"]],
-  description: "Read-only join of batch, product, and category. available = quantity − reserved.",
+  name:'v_batch_available',
+  columns:[['id','bigint'],['product_id','bigint'],['lot_code','varchar(60)'],['expiry_date','date'],['quantity','decimal(12,3)'],['reserved','decimal(12,3)'],['available','derived decimal'],['store_id','bigint'],['unit','varchar(20)'],['category','varchar(100)'],['storage','varchar(20)']],
+  description:'Read-only join of batch, product, and category. available = quantity - reserved.',
 };
-
 const iconPaths = {
   overview: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
   inventory: '<path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/>',
@@ -480,7 +447,7 @@ function renderSchema() {
     <section class="panel" style="margin-top:13px">${panelHeader("Entity relationships", "Every declared foreign key, shown as parent key → referencing field.", "matching", `<span class="panel-kicker">${schemaRelations.length} links</span>`)}<div class="table-wrap schema-relations-wrap"><table class="schema-relations"><thead><tr><th>Parent</th><th>Cardinality</th><th>Child reference</th><th>Nullability</th></tr></thead><tbody>${relations}</tbody></table></div></section>
     <section class="panel" style="margin-top:13px">${panelHeader("Complete table catalog", `${tableCount} tables · ${fieldCount} columns · keys, data types, and important constraints.`, "inventory", `<button class="button button-small" type="button" data-action="schema-expand">Expand all</button><button class="button button-small" type="button" data-action="schema-collapse">Collapse all</button>`)}<div class="schema-table-list">${entities}</div></section>
     <section class="panel schema-view-panel" style="margin-top:13px">${panelHeader(`Derived view · ${schemaView.name}`, schemaView.description, "analytics", `<span class="small-chip neutral">Read-only</span>`)}<div class="schema-view-fields">${viewFields}</div><p class="schema-note">This view joins batch, product, and category records; <code>available</code> is computed as <code>quantity − reserved</code>.</p></section>
-    <p class="schema-source-note">Source: <code>database/migrations/001_initial_postgresql.sql</code>. This page documents the checked-in migration and does not query schema metadata from the running database.</p>`;
+    <p class="schema-source-note">Source: <code>sql/annsetu_python_mysql.sql</code>. This page documents the XAMPP schema and does not query schema metadata from the running database.</p>`;
 }
 
 function renderMap() {

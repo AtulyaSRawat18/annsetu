@@ -1,63 +1,44 @@
-# AnnSetu — XAMPP Setup & Run Guide
+# AnnSetu on Windows with XAMPP and Python
 
-AnnSetu has been upgraded from an in-browser mock database (`sql.js`) to a persistent **MySQL 8.0 / MariaDB** database with a **PHP backend**.
+The Python app uses XAMPP's MySQL/MariaDB service for storage and serves the web UI and API from Python. **Apache is not needed** for this setup. The older `sql/annsetu_mysql.sql` and `api/*.php` files belong to the preserved PHP version; use `sql/annsetu_python_mysql.sql` for the Python app.
 
-The project is linked to your XAMPP installation at:
-`C:\xampp\htdocs\annsetu`
+## First-time setup
 
----
+1. Install XAMPP and Python 3.12 or newer. The project files can stay in their current folder; they do not need to be copied into `htdocs`.
+2. Open the XAMPP Control Panel and start **MySQL**. Leave Apache stopped unless you separately use the legacy PHP app.
+3. From PowerShell, change to the project folder and create the Python environment:
 
-## 3 Simple Steps to Run
+   ```powershell
+   py -3.12 -m venv .venv
+   .\.venv\Scripts\python.exe -m pip install -r requirements.txt
+   ```
 
-### Step 1: Start XAMPP
-1. Open the **XAMPP Control Panel** from your Start menu or `C:\xampp\xampp-control.exe`.
-2. Click **Start** next to **Apache**.
-3. Click **Start** next to **MySQL**.
+   If your installed launcher only has Python 3.13, replace `-3.12` with `-3.13`.
 
-Both should show green status.
+4. Import the Python app schema in phpMyAdmin at [http://localhost/phpmyadmin](http://localhost/phpmyadmin): choose **Import**, select `sql/annsetu_python_mysql.sql`, then click **Import**. The script creates a separate `annsetu_python` database and its tables, leaving the legacy PHP `annsetu` database untouched. It is safe to import again; it does not delete application data.
+5. Double-click `scripts/start_xampp.bat`, or run it from PowerShell:
 
----
+   ```powershell
+   .\scripts\start_xampp.bat
+   ```
 
-### Step 2: Import the Database
-You can import the database using either **phpMyAdmin** or the **terminal**.
+   The first launch creates synthetic demonstration records if the database is empty. Keep the console open while using the app.
 
-#### Option A: Using phpMyAdmin (Visual)
-1. Open your browser and go to [http://localhost/phpmyadmin](http://localhost/phpmyadmin).
-2. Click on the **Import** tab at the top.
-3. Click **Choose File** and select:
-   `c:\Users\ANSHU\OneDrive\Desktop\Inventory expiry project\sql\annsetu_mysql.sql`
-4. Scroll down and click **Import** (or **Go**).
-5. The database `annsetu` will be created with all 10 tables, 7 triggers, 3 views, stored procedures, and initial seed data.
+Open **http://127.0.0.1:8000**. Check **http://127.0.0.1:8000/api/health** for the API and database connection.
 
-#### Option B: Using Command Line (One Command)
-Run this command in PowerShell:
-```powershell
-Get-Content "c:\Users\ANSHU\OneDrive\Desktop\Inventory expiry project\sql\annsetu_mysql.sql" | C:\xampp\mysql\bin\mysql.exe -u root
-```
+## XAMPP configuration
 
----
+The defaults match a standard XAMPP installation: XAMPP at `C:\xampp`, MySQL on port `3306`, database `annsetu_python`, user `root` with an empty password. If XAMPP is installed elsewhere, set `XAMPP_HOME` before starting the batch file. For a non-default database server, set `ANNSETU_DB_HOST`, `ANNSETU_DB_PORT`, `ANNSETU_DB_NAME`, `ANNSETU_DB_USER`, and `ANNSETU_DB_PASSWORD` in the environment. Import the schema using phpMyAdmin if the MySQL root account has a password, since the included starter script assumes XAMPP's default empty password.
 
-### Step 3: Open the Web Application
-Open your browser and navigate to:
-👉 **[http://localhost/annsetu/](http://localhost/annsetu/)**
+The API binds to `127.0.0.1` by default. It has no login flow, so keep it on the local computer and do not expose it to a public network.
 
----
+## Features and data
 
-## What Was Built & Upgraded
+- Inventory batches, expiry-aware recommendations, approvals, and delivery records
+- Manual sales and CSV / Excel sales import
+- Demand baselines and store / recipient map
+- Synthetic demonstration data created automatically on first startup
 
-### 1. Dedicated PHP REST API (`/api`)
-- [`api/db.php`](file:///c:/Users/ANSHU/OneDrive/Desktop/Inventory%20expiry%20project/api/db.php): Centralized PDO connection with utf8mb4 and CORS.
-- [`api/dashboard.php`](file:///c:/Users/ANSHU/OneDrive/Desktop/Inventory%20expiry%20project/api/dashboard.php): Aggregates KPIs, 14-day recursive CTE trend, expiry alerts, and open requests.
-- [`api/inventory.php`](file:///c:/Users/ANSHU/OneDrive/Desktop/Inventory%20expiry%20project/api/inventory.php): Search/filter stock, add batches, record usage/waste movements, and call `sp_discard_expired()`.
-- [`api/distribution.php`](file:///c:/Users/ANSHU/OneDrive/Desktop/Inventory%20expiry%20project/api/distribution.php): Smart FEFO matching with window functions, atomic dispatch via `sp_fefo_dispatch()`, and request management.
-- [`api/ngos.php`](file:///c:/Users/ANSHU/OneDrive/Desktop/Inventory%20expiry%20project/api/ngos.php): Register partner NGOs and rank them by meals served with `RANK() OVER`.
-- [`api/reports.php`](file:///c:/Users/ANSHU/OneDrive/Desktop/Inventory%20expiry%20project/api/reports.php): Executes 10 analytical SQL queries against live MySQL.
-- [`api/audit.php`](file:///c:/Users/ANSHU/OneDrive/Desktop/Inventory%20expiry%20project/api/audit.php): Live stock movement ledger and trigger-written audit trail.
-- [`api/schema.php`](file:///c:/Users/ANSHU/OneDrive/Desktop/Inventory%20expiry%20project/api/schema.php): Extracts real MySQL table, view, trigger, and index definitions, plus foreign key relationships for the ER diagram.
-- [`api/console.php`](file:///c:/Users/ANSHU/OneDrive/Desktop/Inventory%20expiry%20project/api/console.php): Executes arbitrary SQL queries and statements directly against MySQL.
+The scheduled concurrency simulation remains in the PostgreSQL edition and is not included in this XAMPP backend.
 
-### 2. Frontend Re-architecture (`app.js` & `index.html`)
-- All in-browser WebAssembly SQLite scripts (`sql.js`, `db.js`) have been removed.
-- Replaced with an asynchronous `fetch()` API client with network logging in the **API Log** drawer.
-- Data persistence is now active: changes made in the app are permanently stored in MySQL across page reloads and browser sessions.
-
+The records seeded by the Python app are synthetic. Map tiles use OpenStreetMap. For project notes and the old database/report material, see `README.md` and `PROJECT_REPORT.md`.

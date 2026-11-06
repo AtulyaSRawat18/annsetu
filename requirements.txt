@@ -1,5 +1,6 @@
 fastapi==0.115.14
 uvicorn==0.34.3
+mysql-connector-python==9.4.0
 psycopg[binary]==3.2.12
 pandas==2.2.3
 scikit-learn==1.6.1
