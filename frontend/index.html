@@ -1,11 +1,88 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AnnSetu · Grocery intelligence</title><link rel="stylesheet" href="/static/app.css"></head><body>
-<aside class="sidebar"><div class="brand"><span class="mark">A</span><div><b>AnnSetu</b><small>Grocery intelligence</small></div></div><div class="workspace">STORE WORKSPACE <span>GREEN BASKET</span></div><nav><a class="active" href="#overview">◫ &nbsp;Overview</a><a href="#inventory">▦ &nbsp;Inventory & expiry</a><a href="#sales">↗ &nbsp;Sales & forecasts</a><a href="#matches">⇄ &nbsp;Surplus opportunities</a></nav><div class="side-bottom"><span class="green-dot"></span><div><b>Local store workspace</b><small>Simulated data clearly marked</small></div></div></aside>
-<main id="overview"><header><div><div class="crumb">ANNSETU / GROCERY OPERATIONS</div><h1>Store overview</h1><p class="sub">Keep stock moving. Catch surplus early. Make every batch count.</p></div><div class="head-right"><span class="pill"><i></i> Demo data</span><button id="refresh" class="icon">↻</button></div></header>
-<div class="banner"><span>◈</span><div><b>Simulated development data</b><small>Seed records are synthetic. Forecasts are baseline estimates, not confirmed surplus.</small></div><a href="/data/templates/sales.csv" download>Get sales CSV template ↓</a></div>
-<section class="metrics" id="metrics"></section>
-<section class="quick-actions"><button class="button primary" id="add-batch">＋ Receive inventory</button><button class="button secondary" id="add-sale">＋ Record sale</button><button class="button secondary" id="import-sales">⇧ Import CSV / Excel</button><input id="sales-file" type="file" accept=".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden></section>
-<section class="grid main-grid"><article class="panel" id="sales"><div class="panel-head"><div><h2>Sales & surplus outlook</h2><p>Available stock vs. 3-day model forecast</p></div><button class="button primary" id="forecast">Run forecast</button></div><div class="table-wrap"><table><thead><tr><th>PRODUCT / SKU</th><th>AVAILABLE</th><th>3-DAY DEMAND</th><th>POTENTIAL SURPLUS</th><th>STATUS</th></tr></thead><tbody id="products"></tbody></table></div><div class="footnote">Forecast: <span id="mlmetrics">synthetic-trained model</span>. Surplus is a prediction, not a confirmed donation.</div></article>
-<article class="panel match-panel" id="matches"><div class="panel-head"><div><h2>Surplus opportunities</h2><p>Expiry-safe suggestions for declared recipient needs</p></div><span class="tag">REVIEW BEFORE COMMIT</span></div><div id="match-list" class="match-list"><div class="empty">Find compatible, unexpired stock against open recipient needs.</div></div><button id="find-matches" class="button secondary full">Find opportunities <span>→</span></button></article></section>
-<section class="grid second-grid"><article class="panel" id="demand"><div class="panel-head"><div><h2>Recipient requirements</h2><p>Open declared needs</p></div><span class="count" id="demand-count">0</span></div><div id="demand-list" class="demand-list"></div></article><article class="panel" id="impact"><div class="panel-head"><div><h2>Redistribution impact</h2><p>Calculated from confirmed deliveries</p></div><span class="tag muted-tag">ASSUMPTIONS SHOWN</span></div><div id="economics" class="econ"></div><div class="footnote">Illustrative savings and disposal assumptions; replace with measured pilot costs.</div></article></section>
-<section class="panel bottom-panel" id="inventory"><div class="panel-head"><div><h2>Batch expiry watch</h2><p>Earliest expiry first · available quantity excludes reservations</p></div><span class="tag">FEFO</span></div><div class="table-wrap"><table><thead><tr><th>BATCH</th><th>PRODUCT</th><th>QTY</th><th>EXPIRY</th><th>STATUS</th></tr></thead><tbody id="batches"></tbody></table></div></section>
-<footer>AnnSetu · Grocery store workspace <span>API <b id="health">checking…</b> · Local mode · <a href="/api/audit" target="_blank">Activity log</a></span></footer></main><div id="toast" class="toast"></div><script src="/static/app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#163d30">
+  <meta name="description" content="AnnSetu grocery operations and food redistribution intelligence workspace.">
+  <title>AnnSetu · Grocery intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/app.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <a class="brand" href="#overview" data-view="overview" aria-label="AnnSetu home">
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 36 36"><path d="M18 5 5 30h7l6-12 6 12h7L18 5Z"/><path class="brand-leaf" d="M18 18c5-6 10-5 10-5-1 5-4 8-10 8"/></svg></span>
+        <span class="brand-copy"><strong>annsetu</strong><small>Food systems intelligence</small></span>
+      </a>
+
+      <button class="workspace-switcher" type="button" aria-label="Current workspace">
+        <span class="workspace-avatar">GB</span>
+        <span class="workspace-copy"><small>WORKSPACE</small><strong>Green Basket Market</strong></span>
+        <span class="chevron" aria-hidden="true">⌄</span>
+      </button>
+
+      <nav class="primary-nav" aria-label="Workspace sections">
+        <div class="nav-label">WORKSPACE</div>
+        <button class="nav-item is-active" type="button" data-view="overview" aria-current="page"><span class="nav-icon" data-icon="overview"></span><span>Overview</span><kbd>1</kbd></button>
+        <button class="nav-item" type="button" data-view="retail"><span class="nav-icon" data-icon="inventory"></span><span>Retail operations</span><kbd>2</kbd></button>
+        <button class="nav-item" type="button" data-view="demand"><span class="nav-icon" data-icon="community"></span><span>Community demand</span><kbd>3</kbd></button>
+        <button class="nav-item" type="button" data-view="matching"><span class="nav-icon" data-icon="matching"></span><span>Match desk</span><kbd>4</kbd></button>
+        <button class="nav-item" type="button" data-view="logistics"><span class="nav-icon" data-icon="truck"></span><span>Fulfilment</span><kbd>5</kbd></button>
+        <button class="nav-item" type="button" data-view="map"><span class="nav-icon" data-icon="pin"></span><span>Network map</span></button>
+        <button class="nav-item" type="button" data-view="simulation"><span class="nav-icon" data-icon="activity"></span><span>Live simulation</span></button>
+        <div class="nav-label nav-label-spaced">INSIGHTS</div>
+        <button class="nav-item" type="button" data-view="analytics"><span class="nav-icon" data-icon="analytics"></span><span>Impact & analytics</span><kbd>6</kbd></button>
+        <button class="nav-item" type="button" data-view="activity"><span class="nav-icon" data-icon="activity"></span><span>Activity log</span></button>
+        <button class="nav-item" type="button" data-view="model"><span class="nav-icon" data-icon="database"></span><span>ER schema & model</span></button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="sidebar-status"><span class="status-pulse"></span><span><strong id="sidebar-state">Connecting to PostgreSQL</strong><small id="sidebar-health">Waiting for dashboard data…</small></span></div>
+        <div class="profile-row"><div class="profile-avatar">O</div><span><strong>Store operator</strong><small>Local workspace</small></span><button class="profile-more" type="button" aria-label="Workspace profile">···</button></div>
+      </div>
+    </aside>
+
+    <div class="mobile-bar">
+      <button id="menu-toggle" class="mobile-menu" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span></button>
+      <a class="brand mobile-brand" href="#overview" data-view="overview"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 36 36"><path d="M18 5 5 30h7l6-12 6 12h7L18 5Z"/><path class="brand-leaf" d="M18 18c5-6 10-5 10-5-1 5-4 8-10 8"/></svg></span><span class="brand-copy"><strong>annsetu</strong></span></a>
+      <button id="mobile-refresh" class="icon-button" type="button" aria-label="Refresh data"><span data-icon="refresh"></span></button>
+    </div>
+
+    <div class="main-column">
+      <header class="topbar">
+        <div class="breadcrumbs"><span>Green Basket Market</span><span class="crumb-divider">/</span><strong id="breadcrumb-current">Overview</strong></div>
+        <div class="topbar-actions">
+          <label class="search-box" for="global-search"><span data-icon="search"></span><input id="global-search" type="search" placeholder="Search this view…" autocomplete="off"><kbd>/</kbd></label>
+          <button class="icon-button" id="notifications-button" type="button" aria-label="Open notifications" aria-expanded="false"><span data-icon="bell"></span><i id="notification-dot" class="notification-dot"></i></button>
+          <span class="topbar-divider"></span>
+          <div class="topbar-user"><div class="profile-avatar">O</div><span><strong>Operator</strong><small>Green Basket</small></span><span class="chevron">⌄</span></div>
+        </div>
+        <div class="notification-popover" id="notification-popover" hidden></div>
+      </header>
+
+      <main id="main-content" tabindex="-1">
+        <section class="page-heading" id="page-heading"></section>
+        <div class="data-notice" id="data-notice">
+          <span class="notice-icon" data-icon="sparkles"></span>
+          <span class="notice-copy"><strong>Demo data</strong><small>Synthetic records · Forecasts are estimates.</small></span>
+          <a href="/data/templates/sales.csv" download>Download sales template <span aria-hidden="true">↗</span></a>
+          <button id="dismiss-notice" class="notice-close" type="button" aria-label="Dismiss notice">×</button>
+        </div>
+        <div id="view-content" aria-live="polite"></div>
+      </main>
+
+      <footer class="app-footer"><span>AnnSetu <span class="footer-dot">·</span> Food network</span><span><i class="footer-status-dot"></i><span id="footer-health">Connecting to database</span></span></footer>
+    </div>
+  </div>
+
+  <input id="sales-file" type="file" accept=".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden>
+  <div id="modal-root"></div>
+  <div id="toast-region" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+</body>
+</html>

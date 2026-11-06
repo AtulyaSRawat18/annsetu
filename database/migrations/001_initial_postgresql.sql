@@ -58,7 +58,7 @@ CREATE TABLE data_import (
 CREATE TABLE batch (
   id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY, product_id bigint NOT NULL REFERENCES product(id),
   lot_code text NOT NULL, received_on date NOT NULL, manufacturing_date date, expiry_date date NOT NULL,
-  quantity numeric(12,3) NOT NULL CHECK(quantity>0), reserved numeric(12,3) NOT NULL DEFAULT 0 CHECK(reserved>=0 AND reserved<=quantity),
+  quantity numeric(12,3) NOT NULL CHECK(quantity>=0), reserved numeric(12,3) NOT NULL DEFAULT 0 CHECK(reserved>=0 AND reserved<=quantity),
   source text NOT NULL CHECK(source IN ('synthetic','imported','manual')),
   UNIQUE(product_id,lot_code), CHECK(manufacturing_date IS NULL OR expiry_date>manufacturing_date)
 );
@@ -145,7 +145,38 @@ CREATE INDEX ix_sales_product_day ON sales_observation(product_id,sold_on);
 CREATE INDEX ix_demand_open_due ON demand(needed_until) WHERE status IN ('open','partially_fulfilled');
 CREATE INDEX ix_allocation_status ON allocation(status,created_at);
 CREATE INDEX ix_forecast_run_cutoff ON forecast_run(data_cutoff_at,generated_at);
-CREATE VIEW v_batch_available AS
+CREATE VIEW v_batch_available WITH (security_invoker = true) AS
 SELECT b.id batch_id,b.product_id,b.lot_code,b.expiry_date,b.quantity,b.reserved,b.quantity-b.reserved available,
        p.store_id,p.category_id,p.name product,p.unit,p.safety_stock,c.name category,c.storage
 FROM batch b JOIN product p ON p.id=b.product_id JOIN category c ON c.id=p.category_id;
+
+-- This app uses its private FastAPI backend with a server-side database role.
+-- Keep Supabase's public Data API roles from reading or changing application data.
+ALTER TABLE organization ENABLE ROW LEVEL SECURITY;
+ALTER TABLE app_user ENABLE ROW LEVEL SECURITY;
+ALTER TABLE app_role ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_role ENABLE ROW LEVEL SECURITY;
+ALTER TABLE store ENABLE ROW LEVEL SECURITY;
+ALTER TABLE recipient_site ENABLE ROW LEVEL SECURITY;
+ALTER TABLE category ENABLE ROW LEVEL SECURITY;
+ALTER TABLE product ENABLE ROW LEVEL SECURITY;
+ALTER TABLE data_import ENABLE ROW LEVEL SECURITY;
+ALTER TABLE batch ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sales_observation ENABLE ROW LEVEL SECURITY;
+ALTER TABLE inventory_snapshot ENABLE ROW LEVEL SECURITY;
+ALTER TABLE recipient_constraint ENABLE ROW LEVEL SECURITY;
+ALTER TABLE demand ENABLE ROW LEVEL SECURITY;
+ALTER TABLE vehicle ENABLE ROW LEVEL SECURITY;
+ALTER TABLE forecast_run ENABLE ROW LEVEL SECURITY;
+ALTER TABLE forecast_value ENABLE ROW LEVEL SECURITY;
+ALTER TABLE allocation ENABLE ROW LEVEL SECURITY;
+ALTER TABLE allocation_line ENABLE ROW LEVEL SECURITY;
+ALTER TABLE route ENABLE ROW LEVEL SECURITY;
+ALTER TABLE delivery ENABLE ROW LEVEL SECURITY;
+ALTER TABLE economic_record ENABLE ROW LEVEL SECURITY;
+ALTER TABLE audit_log ENABLE ROW LEVEL SECURITY;
+
+REVOKE ALL ON ALL TABLES IN SCHEMA public FROM anon, authenticated;
+REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM anon, authenticated;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON TABLES FROM anon, authenticated;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON SEQUENCES FROM anon, authenticated;

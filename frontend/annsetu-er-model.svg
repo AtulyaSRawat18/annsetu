@@ -1,0 +1,198 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2390" height="1480" viewBox="0 0 2390 1480" role="img" aria-labelledby="title desc">
+<title id="title">AnnSetu PostgreSQL entity relationship model</title>
+<desc id="desc">Five domains with 25 PostgreSQL tables and 44 foreign-key relationships. Solid lines are required and dashed lines are optional.</desc>
+<defs><linearGradient id="bg" x2="0" y2="1"><stop stop-color="#0b1512"/><stop offset="1" stop-color="#0e1b16"/></linearGradient><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 8 4 0 8Z" fill="#7bb89d"/></marker><filter id="shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="5" stdDeviation="8" flood-color="#000" flood-opacity=".22"/></filter></defs>
+<rect width="100%" height="100%" rx="24" fill="url(#bg)"/>
+<text x="34" y="48" fill="#e8f3ed" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="700">AnnSetu · Entity relationship model</text>
+<text x="35" y="74" fill="#8da196" font-family="Inter,Arial,sans-serif" font-size="12">PostgreSQL schema · 25 tables · 44 foreign keys · current migration snapshot</text>
+<g transform="translate(1970 37)" font-family="Inter,Arial,sans-serif" font-size="11"><path d="M0 0h38" stroke="#7bb89d" stroke-width="2" marker-end="url(#arrow)"/><text x="48" y="4" fill="#b7c8bf">Required</text><path d="M125 0h38" stroke="#83b5ff" stroke-width="2" stroke-dasharray="5 4"/><text x="173" y="4" fill="#b7c8bf">Optional</text></g>
+<rect x="30" y="100" width="450" height="1320" rx="18" fill="#101d18" stroke="#273a31"/>
+<rect x="30" y="100" width="450" height="54" rx="18" fill="#14251e"/><path d="M30 136v18h450v-18" fill="#14251e"/>
+<circle cx="54" cy="127" r="5" fill="#74d8ae"/>
+<text x="69" y="132" fill="#e4eee8" font-family="Inter,Arial,sans-serif" font-size="14" font-weight="700">Identity &amp; access</text>
+<rect x="500" y="100" width="450" height="1320" rx="18" fill="#101d18" stroke="#273a31"/>
+<rect x="500" y="100" width="450" height="54" rx="18" fill="#14251e"/><path d="M500 136v18h450v-18" fill="#14251e"/>
+<circle cx="524" cy="127" r="5" fill="#83b5ff"/>
+<text x="539" y="132" fill="#e4eee8" font-family="Inter,Arial,sans-serif" font-size="14" font-weight="700">Retail &amp; inventory</text>
+<rect x="970" y="100" width="450" height="1320" rx="18" fill="#101d18" stroke="#273a31"/>
+<rect x="970" y="100" width="450" height="54" rx="18" fill="#14251e"/><path d="M970 136v18h450v-18" fill="#14251e"/>
+<circle cx="994" cy="127" r="5" fill="#edc07e"/>
+<text x="1009" y="132" fill="#e4eee8" font-family="Inter,Arial,sans-serif" font-size="14" font-weight="700">Recipient network</text>
+<rect x="1440" y="100" width="450" height="1320" rx="18" fill="#101d18" stroke="#273a31"/>
+<rect x="1440" y="100" width="450" height="54" rx="18" fill="#14251e"/><path d="M1440 136v18h450v-18" fill="#14251e"/>
+<circle cx="1464" cy="127" r="5" fill="#c7a4ff"/>
+<text x="1479" y="132" fill="#e4eee8" font-family="Inter,Arial,sans-serif" font-size="14" font-weight="700">Forecast &amp; fulfilment</text>
+<rect x="1910" y="100" width="450" height="1320" rx="18" fill="#101d18" stroke="#273a31"/>
+<rect x="1910" y="100" width="450" height="54" rx="18" fill="#14251e"/><path d="M1910 136v18h450v-18" fill="#14251e"/>
+<circle cx="1934" cy="127" r="5" fill="#5dd4be"/>
+<text x="1949" y="132" fill="#e4eee8" font-family="Inter,Arial,sans-serif" font-size="14" font-weight="700">Simulation &amp; scheduling</text>
+<path d="M460 240 C255.0 240, 255.0 376, 50 376" fill="none" stroke="#7bb89d" stroke-opacity=".38" stroke-width="1.25"><title>organization.id references app_user.organization_id</title></path>
+<path d="M460 240 C490.0 240, 490.0 240, 520 240" fill="none" stroke="#7bb89d" stroke-opacity=".38" stroke-width="1.25"><title>organization.id references store.organization_id</title></path>
+<path d="M460 240 C725.0 240, 725.0 240, 990 240" fill="none" stroke="#7bb89d" stroke-opacity=".38" stroke-width="1.25"><title>organization.id references recipient_site.organization_id</title></path>
+<path d="M460 240 C490.0 240, 490.0 648, 520 648" fill="none" stroke="#7bb89d" stroke-opacity=".38" stroke-width="1.25"><title>organization.id references data_import.organization_id</title></path>
+<path d="M460 240 C960.0 240, 960.0 240, 1460 240" fill="none" stroke="#7bb89d" stroke-opacity=".38" stroke-width="1.25"><title>organization.id references vehicle.organization_id</title></path>
+<path d="M460 376 C255.0 376, 255.0 648, 50 648" fill="none" stroke="#7bb89d" stroke-opacity=".38" stroke-width="1.25"><title>app_user.id references user_role.user_id</title></path>
+<path d="M460 512 C255.0 512, 255.0 648, 50 648" fill="none" stroke="#7bb89d" stroke-opacity=".38" stroke-width="1.25"><title>app_role.id references user_role.role_id</title></path>
+<path d="M460 376 C960.0 376, 960.0 648, 1460 648" fill="none" stroke="#83b5ff" stroke-opacity=".38" stroke-width="1.25" stroke-dasharray="5 4"><title>app_user.id references allocation.approved_by</title></path>
+<path d="M460 376 C255.0 376, 255.0 784, 50 784" fill="none" stroke="#83b5ff" stroke-opacity=".38" stroke-width="1.25" stroke-dasharray="5 4"><title>app_user.id references audit_log.actor_user_id</title></path>
+<path d="M930 240 C725.0 240, 725.0 512, 520 512" fill="none" stroke="#7bb89d" stroke-opacity=".38" stroke-width="1.25"><title>store.id references product.store_id</title></path>
+<path d="M930 240 C725.0 240, 725.0 1056, 520 1056" fill="none" stroke="#7bb89d" stroke-opacity=".38" stroke-width="1.25"><title>store.id references inventory_snapshot.store_id</title></path>
+<path d="M930 240 C1195.0 240, 1195.0 512, 1460 512" fill="none" stroke="#83b5ff" stroke-opacity=".38" stroke-width="1.25" stroke-dasharray="5 4"><title>store.id references forecast_value.store_id</title></path>
+<path d="M930 376 C725.0 376, 725.0 512, 520 512" fill="none" stroke="#7bb89d" stroke-opacity=".38" stroke-width="1.25"><title>category.id references product.category_id</title></path>
+<path d="M930 376 C960.0 376, 960.0 376, 990 376" fill="none" stroke="#7bb89d" stroke-opacity=".38" stroke-width="1.25"><title>category.id references recipient_constraint.category_id</title></path>
+<path d="M930 376 C960.0 376, 960.0 512, 990 512" fill="none" stroke="#7bb89d" stroke-opacity=".38" stroke-width="1.25"><title>category.id references demand.category_id</title></path>
+<path d="M930 376 C1195.0 376, 1195.0 512, 1460 512" fill="none" stroke="#83b5ff" stroke-opacity=".38" stroke-width="1.25" stroke-dasharray="5 4"><title>category.id references forecast_value.category_id</title></path>
+<path d="M930 512 C725.0 512, 725.0 784, 520 784" fill="none" stroke="#7bb89d" stroke-opacity=".38" stroke-width="1.25"><title>product.id references batch.product_id</title></path>
+<path d="M930 512 C725.0 512, 725.0 920, 520 920" fill="none" stroke="#7bb89d" stroke-opacity=".38" stroke-width="1.25"><title>product.id references sales_observation.product_id</title></path>
+<path d="M930 512 C725.0 512, 725.0 1056, 520 1056" fill="none" stroke="#7bb89d" stroke-opacity=".38" stroke-width="1.25"><title>product.id references inventory_snapshot.product_id</title></path>
+<path d="M930 512 C1195.0 512, 1195.0 512, 1460 512" fill="none" stroke="#83b5ff" stroke-opacity=".38" stroke-width="1.25" stroke-dasharray="5 4"><title>product.id references forecast_value.product_id</title></path>
+<path d="M930 648 C725.0 648, 725.0 920, 520 920" fill="none" stroke="#83b5ff" stroke-opacity=".38" stroke-width="1.25" stroke-dasharray="5 4"><title>data_import.id references sales_observation.import_id</title></path>
+<path d="M930 648 C725.0 648, 725.0 1056, 520 1056" fill="none" stroke="#83b5ff" stroke-opacity=".38" stroke-width="1.25" stroke-dasharray="5 4"><title>data_import.id references inventory_snapshot.import_id</title></path>
+<path d="M1400 240 C1195.0 240, 1195.0 376, 990 376" fill="none" stroke="#7bb89d" stroke-opacity=".38" stroke-width="1.25"><title>recipient_site.id references recipient_constraint.recipient_id</title></path>
+<path d="M1400 240 C1195.0 240, 1195.0 512, 990 512" fill="none" stroke="#7bb89d" stroke-opacity=".38" stroke-width="1.25"><title>recipient_site.id references demand.recipient_id</title></path>
+<path d="M1400 240 C1430.0 240, 1430.0 512, 1460 512" fill="none" stroke="#83b5ff" stroke-opacity=".38" stroke-width="1.25" stroke-dasharray="5 4"><title>recipient_site.id references forecast_value.recipient_id</title></path>
+<path d="M1870 376 C1665.0 376, 1665.0 512, 1460 512" fill="none" stroke="#7bb89d" stroke-opacity=".38" stroke-width="1.25"><title>forecast_run.id references forecast_value.run_id</title></path>
+<path d="M1400 512 C1430.0 512, 1430.0 648, 1460 648" fill="none" stroke="#7bb89d" stroke-opacity=".38" stroke-width="1.25"><title>demand.id references allocation.demand_id</title></path>
+<path d="M1870 648 C1665.0 648, 1665.0 784, 1460 784" fill="none" stroke="#7bb89d" stroke-opacity=".38" stroke-width="1.25"><title>allocation.id references allocation_line.allocation_id</title></path>
+<path d="M930 784 C1195.0 784, 1195.0 784, 1460 784" fill="none" stroke="#7bb89d" stroke-opacity=".38" stroke-width="1.25"><title>batch.id references allocation_line.batch_id</title></path>
+<path d="M1870 648 C1665.0 648, 1665.0 1056, 1460 1056" fill="none" stroke="#7bb89d" stroke-opacity=".38" stroke-width="1.25"><title>allocation.id references delivery.allocation_id</title></path>
+<path d="M1870 240 C1665.0 240, 1665.0 920, 1460 920" fill="none" stroke="#83b5ff" stroke-opacity=".38" stroke-width="1.25" stroke-dasharray="5 4"><title>vehicle.id references route.vehicle_id</title></path>
+<path d="M1870 920 C1665.0 920, 1665.0 1056, 1460 1056" fill="none" stroke="#83b5ff" stroke-opacity=".38" stroke-width="1.25" stroke-dasharray="5 4"><title>route.id references delivery.route_id</title></path>
+<path d="M1870 1056 C1665.0 1056, 1665.0 1192, 1460 1192" fill="none" stroke="#7bb89d" stroke-opacity=".38" stroke-width="1.25"><title>delivery.id references economic_record.delivery_id</title></path>
+<path d="M2340 240 C2135.0 240, 2135.0 376, 1930 376" fill="none" stroke="#7bb89d" stroke-opacity=".38" stroke-width="1.25"><title>simulation_run.id references simulation_event.run_id</title></path>
+<path d="M2340 240 C1430.0 240, 1430.0 784, 520 784" fill="none" stroke="#83b5ff" stroke-opacity=".38" stroke-width="1.25" stroke-dasharray="5 4"><title>simulation_run.id references batch.simulation_run_id</title></path>
+<path d="M2340 240 C1430.0 240, 1430.0 920, 520 920" fill="none" stroke="#83b5ff" stroke-opacity=".38" stroke-width="1.25" stroke-dasharray="5 4"><title>simulation_run.id references sales_observation.simulation_run_id</title></path>
+<path d="M2340 240 C1430.0 240, 1430.0 1056, 520 1056" fill="none" stroke="#83b5ff" stroke-opacity=".38" stroke-width="1.25" stroke-dasharray="5 4"><title>simulation_run.id references inventory_snapshot.simulation_run_id</title></path>
+<path d="M2340 240 C1665.0 240, 1665.0 512, 990 512" fill="none" stroke="#83b5ff" stroke-opacity=".38" stroke-width="1.25" stroke-dasharray="5 4"><title>simulation_run.id references demand.simulation_run_id</title></path>
+<path d="M2340 240 C1900.0 240, 1900.0 240, 1460 240" fill="none" stroke="#83b5ff" stroke-opacity=".38" stroke-width="1.25" stroke-dasharray="5 4"><title>simulation_run.id references vehicle.simulation_run_id</title></path>
+<path d="M2340 240 C1900.0 240, 1900.0 376, 1460 376" fill="none" stroke="#83b5ff" stroke-opacity=".38" stroke-width="1.25" stroke-dasharray="5 4"><title>simulation_run.id references forecast_run.simulation_run_id</title></path>
+<path d="M2340 240 C1900.0 240, 1900.0 648, 1460 648" fill="none" stroke="#83b5ff" stroke-opacity=".38" stroke-width="1.25" stroke-dasharray="5 4"><title>simulation_run.id references allocation.simulation_run_id</title></path>
+<path d="M2340 240 C1900.0 240, 1900.0 920, 1460 920" fill="none" stroke="#83b5ff" stroke-opacity=".38" stroke-width="1.25" stroke-dasharray="5 4"><title>simulation_run.id references route.simulation_run_id</title></path>
+<path d="M2340 240 C1900.0 240, 1900.0 1056, 1460 1056" fill="none" stroke="#83b5ff" stroke-opacity=".38" stroke-width="1.25" stroke-dasharray="5 4"><title>simulation_run.id references delivery.simulation_run_id</title></path>
+<path d="M2340 240 C1900.0 240, 1900.0 1192, 1460 1192" fill="none" stroke="#83b5ff" stroke-opacity=".38" stroke-width="1.25" stroke-dasharray="5 4"><title>simulation_run.id references economic_record.simulation_run_id</title></path>
+<g filter="url(#shadow)"><rect x="50" y="184" width="410" height="112" rx="11" fill="#15241e" stroke="#344a3e"/><path d="M61 184h388" stroke="#74d8ae" stroke-width="2"/></g>
+<text x="64" y="211" fill="#e6f0e9" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="700">organization</text>
+<text x="64" y="235" fill="#9bb0a4" font-family="Inter,Arial,sans-serif" font-size="10">PK id</text>
+<text x="64" y="256" fill="#83b5a0" font-family="Inter,Arial,sans-serif" font-size="9">No foreign keys</text>
+<text x="64" y="280" fill="#667c70" font-family="Inter,Arial,sans-serif" font-size="8">Identity &amp; access</text>
+<g filter="url(#shadow)"><rect x="50" y="320" width="410" height="112" rx="11" fill="#15241e" stroke="#344a3e"/><path d="M61 320h388" stroke="#74d8ae" stroke-width="2"/></g>
+<text x="64" y="347" fill="#e6f0e9" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="700">app_user</text>
+<text x="64" y="371" fill="#9bb0a4" font-family="Inter,Arial,sans-serif" font-size="10">PK id</text>
+<text x="64" y="392" fill="#83b5a0" font-family="Inter,Arial,sans-serif" font-size="9">FK organization_id</text>
+<text x="64" y="416" fill="#667c70" font-family="Inter,Arial,sans-serif" font-size="8">Identity &amp; access</text>
+<g filter="url(#shadow)"><rect x="50" y="456" width="410" height="112" rx="11" fill="#15241e" stroke="#344a3e"/><path d="M61 456h388" stroke="#74d8ae" stroke-width="2"/></g>
+<text x="64" y="483" fill="#e6f0e9" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="700">app_role</text>
+<text x="64" y="507" fill="#9bb0a4" font-family="Inter,Arial,sans-serif" font-size="10">PK id</text>
+<text x="64" y="528" fill="#83b5a0" font-family="Inter,Arial,sans-serif" font-size="9">No foreign keys</text>
+<text x="64" y="552" fill="#667c70" font-family="Inter,Arial,sans-serif" font-size="8">Identity &amp; access</text>
+<g filter="url(#shadow)"><rect x="50" y="592" width="410" height="112" rx="11" fill="#15241e" stroke="#344a3e"/><path d="M61 592h388" stroke="#74d8ae" stroke-width="2"/></g>
+<text x="64" y="619" fill="#e6f0e9" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="700">user_role</text>
+<text x="64" y="643" fill="#9bb0a4" font-family="Inter,Arial,sans-serif" font-size="10">PK id</text>
+<text x="64" y="664" fill="#83b5a0" font-family="Inter,Arial,sans-serif" font-size="9">FK user_id · role_id</text>
+<text x="64" y="688" fill="#667c70" font-family="Inter,Arial,sans-serif" font-size="8">Identity &amp; access</text>
+<g filter="url(#shadow)"><rect x="50" y="728" width="410" height="112" rx="11" fill="#15241e" stroke="#344a3e"/><path d="M61 728h388" stroke="#74d8ae" stroke-width="2"/></g>
+<text x="64" y="755" fill="#e6f0e9" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="700">audit_log</text>
+<text x="64" y="779" fill="#9bb0a4" font-family="Inter,Arial,sans-serif" font-size="10">PK id</text>
+<text x="64" y="800" fill="#83b5a0" font-family="Inter,Arial,sans-serif" font-size="9">FK actor_user_id · optional</text>
+<text x="64" y="824" fill="#667c70" font-family="Inter,Arial,sans-serif" font-size="8">Identity &amp; access</text>
+<g filter="url(#shadow)"><rect x="520" y="184" width="410" height="112" rx="11" fill="#15241e" stroke="#344a3e"/><path d="M531 184h388" stroke="#83b5ff" stroke-width="2"/></g>
+<text x="534" y="211" fill="#e6f0e9" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="700">store</text>
+<text x="534" y="235" fill="#9bb0a4" font-family="Inter,Arial,sans-serif" font-size="10">PK id</text>
+<text x="534" y="256" fill="#83b5a0" font-family="Inter,Arial,sans-serif" font-size="9">FK organization_id</text>
+<text x="534" y="280" fill="#667c70" font-family="Inter,Arial,sans-serif" font-size="8">Retail &amp; inventory</text>
+<g filter="url(#shadow)"><rect x="520" y="320" width="410" height="112" rx="11" fill="#15241e" stroke="#344a3e"/><path d="M531 320h388" stroke="#83b5ff" stroke-width="2"/></g>
+<text x="534" y="347" fill="#e6f0e9" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="700">category</text>
+<text x="534" y="371" fill="#9bb0a4" font-family="Inter,Arial,sans-serif" font-size="10">PK id</text>
+<text x="534" y="392" fill="#83b5a0" font-family="Inter,Arial,sans-serif" font-size="9">No foreign keys</text>
+<text x="534" y="416" fill="#667c70" font-family="Inter,Arial,sans-serif" font-size="8">Retail &amp; inventory</text>
+<g filter="url(#shadow)"><rect x="520" y="456" width="410" height="112" rx="11" fill="#15241e" stroke="#344a3e"/><path d="M531 456h388" stroke="#83b5ff" stroke-width="2"/></g>
+<text x="534" y="483" fill="#e6f0e9" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="700">product</text>
+<text x="534" y="507" fill="#9bb0a4" font-family="Inter,Arial,sans-serif" font-size="10">PK id</text>
+<text x="534" y="528" fill="#83b5a0" font-family="Inter,Arial,sans-serif" font-size="9">FK store_id · category_id</text>
+<text x="534" y="552" fill="#667c70" font-family="Inter,Arial,sans-serif" font-size="8">Retail &amp; inventory</text>
+<g filter="url(#shadow)"><rect x="520" y="592" width="410" height="112" rx="11" fill="#15241e" stroke="#344a3e"/><path d="M531 592h388" stroke="#83b5ff" stroke-width="2"/></g>
+<text x="534" y="619" fill="#e6f0e9" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="700">data_import</text>
+<text x="534" y="643" fill="#9bb0a4" font-family="Inter,Arial,sans-serif" font-size="10">PK id</text>
+<text x="534" y="664" fill="#83b5a0" font-family="Inter,Arial,sans-serif" font-size="9">FK organization_id</text>
+<text x="534" y="688" fill="#667c70" font-family="Inter,Arial,sans-serif" font-size="8">Retail &amp; inventory</text>
+<g filter="url(#shadow)"><rect x="520" y="728" width="410" height="112" rx="11" fill="#15241e" stroke="#344a3e"/><path d="M531 728h388" stroke="#83b5ff" stroke-width="2"/></g>
+<text x="534" y="755" fill="#e6f0e9" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="700">batch</text>
+<text x="534" y="779" fill="#9bb0a4" font-family="Inter,Arial,sans-serif" font-size="10">PK id</text>
+<text x="534" y="800" fill="#83b5a0" font-family="Inter,Arial,sans-serif" font-size="9">FK product_id · simulation_run_id · optional</text>
+<text x="534" y="824" fill="#667c70" font-family="Inter,Arial,sans-serif" font-size="8">Retail &amp; inventory</text>
+<g filter="url(#shadow)"><rect x="520" y="864" width="410" height="112" rx="11" fill="#15241e" stroke="#344a3e"/><path d="M531 864h388" stroke="#83b5ff" stroke-width="2"/></g>
+<text x="534" y="891" fill="#e6f0e9" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="700">sales_observation</text>
+<text x="534" y="915" fill="#9bb0a4" font-family="Inter,Arial,sans-serif" font-size="10">PK id</text>
+<text x="534" y="936" fill="#83b5a0" font-family="Inter,Arial,sans-serif" font-size="9">FK product_id · import_id · optional · simulation_run_id · optional</text>
+<text x="534" y="960" fill="#667c70" font-family="Inter,Arial,sans-serif" font-size="8">Retail &amp; inventory</text>
+<g filter="url(#shadow)"><rect x="520" y="1000" width="410" height="112" rx="11" fill="#15241e" stroke="#344a3e"/><path d="M531 1000h388" stroke="#83b5ff" stroke-width="2"/></g>
+<text x="534" y="1027" fill="#e6f0e9" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="700">inventory_snapshot</text>
+<text x="534" y="1051" fill="#9bb0a4" font-family="Inter,Arial,sans-serif" font-size="10">PK id</text>
+<text x="534" y="1072" fill="#83b5a0" font-family="Inter,Arial,sans-serif" font-size="9">FK store_id · product_id · import_id · optional · simulation_run_i…</text>
+<text x="534" y="1096" fill="#667c70" font-family="Inter,Arial,sans-serif" font-size="8">Retail &amp; inventory</text>
+<g filter="url(#shadow)"><rect x="990" y="184" width="410" height="112" rx="11" fill="#15241e" stroke="#344a3e"/><path d="M1001 184h388" stroke="#edc07e" stroke-width="2"/></g>
+<text x="1004" y="211" fill="#e6f0e9" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="700">recipient_site</text>
+<text x="1004" y="235" fill="#9bb0a4" font-family="Inter,Arial,sans-serif" font-size="10">PK id</text>
+<text x="1004" y="256" fill="#83b5a0" font-family="Inter,Arial,sans-serif" font-size="9">FK organization_id</text>
+<text x="1004" y="280" fill="#667c70" font-family="Inter,Arial,sans-serif" font-size="8">Recipient network</text>
+<g filter="url(#shadow)"><rect x="990" y="320" width="410" height="112" rx="11" fill="#15241e" stroke="#344a3e"/><path d="M1001 320h388" stroke="#edc07e" stroke-width="2"/></g>
+<text x="1004" y="347" fill="#e6f0e9" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="700">recipient_constraint</text>
+<text x="1004" y="371" fill="#9bb0a4" font-family="Inter,Arial,sans-serif" font-size="10">PK id</text>
+<text x="1004" y="392" fill="#83b5a0" font-family="Inter,Arial,sans-serif" font-size="9">FK category_id · recipient_id</text>
+<text x="1004" y="416" fill="#667c70" font-family="Inter,Arial,sans-serif" font-size="8">Recipient network</text>
+<g filter="url(#shadow)"><rect x="990" y="456" width="410" height="112" rx="11" fill="#15241e" stroke="#344a3e"/><path d="M1001 456h388" stroke="#edc07e" stroke-width="2"/></g>
+<text x="1004" y="483" fill="#e6f0e9" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="700">demand</text>
+<text x="1004" y="507" fill="#9bb0a4" font-family="Inter,Arial,sans-serif" font-size="10">PK id</text>
+<text x="1004" y="528" fill="#83b5a0" font-family="Inter,Arial,sans-serif" font-size="9">FK category_id · recipient_id · simulation_run_id · optional</text>
+<text x="1004" y="552" fill="#667c70" font-family="Inter,Arial,sans-serif" font-size="8">Recipient network</text>
+<g filter="url(#shadow)"><rect x="1460" y="184" width="410" height="112" rx="11" fill="#15241e" stroke="#344a3e"/><path d="M1471 184h388" stroke="#c7a4ff" stroke-width="2"/></g>
+<text x="1474" y="211" fill="#e6f0e9" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="700">vehicle</text>
+<text x="1474" y="235" fill="#9bb0a4" font-family="Inter,Arial,sans-serif" font-size="10">PK id</text>
+<text x="1474" y="256" fill="#83b5a0" font-family="Inter,Arial,sans-serif" font-size="9">FK organization_id · simulation_run_id · optional</text>
+<text x="1474" y="280" fill="#667c70" font-family="Inter,Arial,sans-serif" font-size="8">Forecast &amp; fulfilment</text>
+<g filter="url(#shadow)"><rect x="1460" y="320" width="410" height="112" rx="11" fill="#15241e" stroke="#344a3e"/><path d="M1471 320h388" stroke="#c7a4ff" stroke-width="2"/></g>
+<text x="1474" y="347" fill="#e6f0e9" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="700">forecast_run</text>
+<text x="1474" y="371" fill="#9bb0a4" font-family="Inter,Arial,sans-serif" font-size="10">PK id</text>
+<text x="1474" y="392" fill="#83b5a0" font-family="Inter,Arial,sans-serif" font-size="9">FK simulation_run_id · optional</text>
+<text x="1474" y="416" fill="#667c70" font-family="Inter,Arial,sans-serif" font-size="8">Forecast &amp; fulfilment</text>
+<g filter="url(#shadow)"><rect x="1460" y="456" width="410" height="112" rx="11" fill="#15241e" stroke="#344a3e"/><path d="M1471 456h388" stroke="#c7a4ff" stroke-width="2"/></g>
+<text x="1474" y="483" fill="#e6f0e9" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="700">forecast_value</text>
+<text x="1474" y="507" fill="#9bb0a4" font-family="Inter,Arial,sans-serif" font-size="10">PK id</text>
+<text x="1474" y="528" fill="#83b5a0" font-family="Inter,Arial,sans-serif" font-size="9">FK store_id · optional · category_id · optional · product_id · opt…</text>
+<text x="1474" y="552" fill="#667c70" font-family="Inter,Arial,sans-serif" font-size="8">Forecast &amp; fulfilment</text>
+<g filter="url(#shadow)"><rect x="1460" y="592" width="410" height="112" rx="11" fill="#15241e" stroke="#344a3e"/><path d="M1471 592h388" stroke="#c7a4ff" stroke-width="2"/></g>
+<text x="1474" y="619" fill="#e6f0e9" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="700">allocation</text>
+<text x="1474" y="643" fill="#9bb0a4" font-family="Inter,Arial,sans-serif" font-size="10">PK id</text>
+<text x="1474" y="664" fill="#83b5a0" font-family="Inter,Arial,sans-serif" font-size="9">FK approved_by · optional · demand_id · simulation_run_id · optional</text>
+<text x="1474" y="688" fill="#667c70" font-family="Inter,Arial,sans-serif" font-size="8">Forecast &amp; fulfilment</text>
+<g filter="url(#shadow)"><rect x="1460" y="728" width="410" height="112" rx="11" fill="#15241e" stroke="#344a3e"/><path d="M1471 728h388" stroke="#c7a4ff" stroke-width="2"/></g>
+<text x="1474" y="755" fill="#e6f0e9" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="700">allocation_line</text>
+<text x="1474" y="779" fill="#9bb0a4" font-family="Inter,Arial,sans-serif" font-size="10">PK id</text>
+<text x="1474" y="800" fill="#83b5a0" font-family="Inter,Arial,sans-serif" font-size="9">FK allocation_id · batch_id</text>
+<text x="1474" y="824" fill="#667c70" font-family="Inter,Arial,sans-serif" font-size="8">Forecast &amp; fulfilment</text>
+<g filter="url(#shadow)"><rect x="1460" y="864" width="410" height="112" rx="11" fill="#15241e" stroke="#344a3e"/><path d="M1471 864h388" stroke="#c7a4ff" stroke-width="2"/></g>
+<text x="1474" y="891" fill="#e6f0e9" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="700">route</text>
+<text x="1474" y="915" fill="#9bb0a4" font-family="Inter,Arial,sans-serif" font-size="10">PK id</text>
+<text x="1474" y="936" fill="#83b5a0" font-family="Inter,Arial,sans-serif" font-size="9">FK vehicle_id · optional · simulation_run_id · optional</text>
+<text x="1474" y="960" fill="#667c70" font-family="Inter,Arial,sans-serif" font-size="8">Forecast &amp; fulfilment</text>
+<g filter="url(#shadow)"><rect x="1460" y="1000" width="410" height="112" rx="11" fill="#15241e" stroke="#344a3e"/><path d="M1471 1000h388" stroke="#c7a4ff" stroke-width="2"/></g>
+<text x="1474" y="1027" fill="#e6f0e9" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="700">delivery</text>
+<text x="1474" y="1051" fill="#9bb0a4" font-family="Inter,Arial,sans-serif" font-size="10">PK id</text>
+<text x="1474" y="1072" fill="#83b5a0" font-family="Inter,Arial,sans-serif" font-size="9">FK allocation_id · route_id · optional · simulation_run_id · optional</text>
+<text x="1474" y="1096" fill="#667c70" font-family="Inter,Arial,sans-serif" font-size="8">Forecast &amp; fulfilment</text>
+<g filter="url(#shadow)"><rect x="1460" y="1136" width="410" height="112" rx="11" fill="#15241e" stroke="#344a3e"/><path d="M1471 1136h388" stroke="#c7a4ff" stroke-width="2"/></g>
+<text x="1474" y="1163" fill="#e6f0e9" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="700">economic_record</text>
+<text x="1474" y="1187" fill="#9bb0a4" font-family="Inter,Arial,sans-serif" font-size="10">PK id</text>
+<text x="1474" y="1208" fill="#83b5a0" font-family="Inter,Arial,sans-serif" font-size="9">FK delivery_id · simulation_run_id · optional</text>
+<text x="1474" y="1232" fill="#667c70" font-family="Inter,Arial,sans-serif" font-size="8">Forecast &amp; fulfilment</text>
+<g filter="url(#shadow)"><rect x="1930" y="184" width="410" height="112" rx="11" fill="#15241e" stroke="#344a3e"/><path d="M1941 184h388" stroke="#5dd4be" stroke-width="2"/></g>
+<text x="1944" y="211" fill="#e6f0e9" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="700">simulation_run</text>
+<text x="1944" y="235" fill="#9bb0a4" font-family="Inter,Arial,sans-serif" font-size="10">PK id</text>
+<text x="1944" y="256" fill="#83b5a0" font-family="Inter,Arial,sans-serif" font-size="9">No foreign keys</text>
+<text x="1944" y="280" fill="#667c70" font-family="Inter,Arial,sans-serif" font-size="8">Simulation &amp; scheduling</text>
+<g filter="url(#shadow)"><rect x="1930" y="320" width="410" height="112" rx="11" fill="#15241e" stroke="#344a3e"/><path d="M1941 320h388" stroke="#5dd4be" stroke-width="2"/></g>
+<text x="1944" y="347" fill="#e6f0e9" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="700">simulation_event</text>
+<text x="1944" y="371" fill="#9bb0a4" font-family="Inter,Arial,sans-serif" font-size="10">PK id</text>
+<text x="1944" y="392" fill="#83b5a0" font-family="Inter,Arial,sans-serif" font-size="9">FK run_id</text>
+<text x="1944" y="416" fill="#667c70" font-family="Inter,Arial,sans-serif" font-size="8">Simulation &amp; scheduling</text>
+<text x="35" y="1450" fill="#71877a" font-family="Inter,Arial,sans-serif" font-size="10">Simplified relationship view · inspect the table catalog for complete columns, types, unique constraints and checks.</text></svg>
